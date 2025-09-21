@@ -204,7 +204,6 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
         updateBrowseState({ loading: false });
       }
     } catch (error) {
-      
       const errorMessage = error instanceof MealDBApiError ? error.message : 'Failed to load random recipes';
       updateBrowseState({ 
         loading: false, 
@@ -213,7 +212,7 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
       });
       console.error('Failed to load random recipes:', error);
     }
-  }, [activeTab, updateBrowseState]);
+  }, [activeTab, updateBrowseState, tabState.random.loaded, browseState.loading]);
 
   // Load random recipes on initial mount only
   useEffect(() => {
