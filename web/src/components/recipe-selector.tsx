@@ -35,7 +35,9 @@ export function RecipeSelector({ onRecipeSelected }: RecipeSelectorProps) {
     // If it's a preview recipe, load the full details
     if (recipe.isPreview) {
       try {
-        const fullMeal = await mealDBApi.getMealById(recipe.id);
+        // Extract the MealDB ID from the recipe ID (remove 'mealdb-' prefix if present)
+        const mealId = recipe.id.startsWith('mealdb-') ? recipe.id.substring(7) : recipe.id;
+        const fullMeal = await mealDBApi.getMealById(mealId);
         if (fullMeal) {
           const fullRecipe = transformMealDBToRecipe(fullMeal);
           // Cache the full recipe for offline access (only on client side)
