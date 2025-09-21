@@ -10,6 +10,11 @@ export async function POST(request: Request) {
 
   try {
     playgroundState = await request.json();
+    console.log('🔗 Token API received instructions:', {
+      instructionsLength: playgroundState.instructions.length,
+      hasRecipeContext: playgroundState.instructions.includes('CURRENT COOKING SESSION'),
+      preview: playgroundState.instructions.substring(0, 150) + '...'
+    });
   } catch (error) {
     return Response.json(
       { error: "Invalid JSON in request body" },
@@ -19,14 +24,16 @@ export async function POST(request: Request) {
 
   const {
     instructions,
-    geminiAPIKey,
     sessionConfig: { modalities, voice, temperature, maxOutputTokens },
   } = playgroundState;
 
+  // Use environment variable for Gemini API key
+  const geminiAPIKey = process.env.GEMINI_API_KEY;
   if (!geminiAPIKey) {
+    console.error("GEMINI_API_KEY environment variable is not set");
     return Response.json(
-      { error: "Gemini API key is required" },
-      { status: 400 }
+      { error: "Server configuration error: Gemini API key not configured" },
+      { status: 500 }
     );
   }
 

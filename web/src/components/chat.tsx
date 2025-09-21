@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Instructions } from "@/components/instructions";
+
 import { SessionControls } from "@/components/session-controls";
 import { ConnectButton } from "./connect-button";
 import { ConnectionState } from "livekit-client";
@@ -10,19 +10,28 @@ import {
   useConnectionState,
   useVoiceAssistant,
 } from "@livekit/components-react";
-import { ChatControls } from "@/components/chat-controls";
+
 import { useAgent } from "@/hooks/use-agent";
 import { useConnection } from "@/hooks/use-connection";
+import { useRecipe } from "@/hooks/use-recipe";
 import { toast } from "@/hooks/use-toast";
 import { GeminiVisualizer } from "@/components/visualizer/gemini-visualizer";
+import { Button } from "@/components/ui/button";
+import { StopCircle } from "lucide-react";
 
-export function Chat() {
+interface ChatProps {
+  compact?: boolean;
+  showControls?: boolean;
+}
+
+export function Chat({ compact = false, showControls = true }: ChatProps) {
   const connectionState = useConnectionState();
   const { audioTrack, state } = useVoiceAssistant();
   const [isChatRunning, setIsChatRunning] = useState(false);
   const { agent } = useAgent();
   const { disconnect } = useConnection();
-  const [isEditingInstructions, setIsEditingInstructions] = useState(false);
+  const { endCookingSession } = useRecipe();
+
 
   const [hasSeenAgent, setHasSeenAgent] = useState(false);
 
@@ -79,12 +88,11 @@ export function Chat() {
     };
   }, [connectionState, agent, disconnect, hasSeenAgent]);
 
-  const toggleInstructionsEdit = () =>
-    setIsEditingInstructions(!isEditingInstructions);
+
 
   const renderVisualizer = () => (
     <div className="flex w-full items-center">
-      <div className="h-[280px] lg:h-[400px] mt-16 md:mt-0 lg:pb-24 w-full">
+      <div className={compact ? "h-[120px] w-full" : "h-[280px] lg:h-[400px] mt-16 md:mt-0 lg:pb-24 w-full"}>
         <GeminiVisualizer agentState={state} agentTrackRef={audioTrack} />
       </div>
     </div>
@@ -105,30 +113,35 @@ export function Chat() {
   );
 
   return (
-    <div className="flex flex-col h-full overflow-hidden p-2 lg:p-4">
-      <ChatControls
-        showEditButton={isChatRunning}
-        isEditingInstructions={isEditingInstructions}
-        onToggleEdit={toggleInstructionsEdit}
-      />
-      <div className="flex flex-col flex-grow items-center lg:justify-between mt-12 lg:mt-0">
-        <div className="w-full h-full flex flex-col">
-          <div className="flex items-center justify-center w-full">
-            <div className="lg:hidden w-full">
-              {!isEditingInstructions ? renderVisualizer() : <Instructions />}
-            </div>
-            <div className="hidden lg:block w-full">
-              <Instructions />
-            </div>
-          </div>
-          <div className="grow h-full flex items-center justify-center">
-            <div className="w-full hidden lg:block">
-              {!isEditingInstructions && renderVisualizer()}
-            </div>
-          </div>
+    <div className={compact ? "flex flex-col h-full overflow-hidden p-2" : "flex flex-col h-full overflow-hidden p-2 lg:p-4"}>
+      <div className="flex flex-col flex-grow items-center justify-center">
+        <div className="w-full h-full flex flex-col items-center justify-center">
+          {renderVisualizer()}
         </div>
-
-        <div className="my-4">{renderConnectionControl()}</div>
+        {showControls && (
+          <div className={compact ? "space-y-2" : "space-y-3"}>
+            {renderConnectionControl()}
+            {/* End Session Button */}
+            <div className="flex justify-center">
+              <Button
+                onClick={async () => {
+                  try {
+                    await disconnect();
+                  } catch (error) {
+                    console.error('Error disconnecting:', error);
+                  }
+                  endCookingSession();
+                }}
+                variant="destructive"
+                size="sm"
+                className="px-4"
+              >
+                <StopCircle className="mr-2 h-4 w-4" />
+                End Session
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
