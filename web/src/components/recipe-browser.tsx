@@ -468,10 +468,42 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
     // Scroll to the top of the recipe grid after page change
     setTimeout(() => {
       if (recipeGridRef.current) {
-        recipeGridRef.current.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
-        });
+        // Check if we're on mobile device
+        const isMobile = window.innerWidth <= 768 || 'ontouchstart' in window;
+        
+        if (isMobile) {
+          // On mobile, scroll within the container instead of the entire viewport
+          // Find the scrollable parent container - ScrollArea creates a viewport div
+          const scrollableParent = recipeGridRef.current.closest('[data-radix-scroll-area-viewport]') ||
+                                   recipeGridRef.current.closest('.overflow-y-auto') ||
+                                   recipeGridRef.current.closest('[style*="overflow"]');
+          
+          if (scrollableParent) {
+            // Calculate the position relative to the scrollable container
+            const containerRect = scrollableParent.getBoundingClientRect();
+            const elementRect = recipeGridRef.current.getBoundingClientRect();
+            const scrollTop = scrollableParent.scrollTop;
+            const targetScrollTop = scrollTop + (elementRect.top - containerRect.top) - 20;
+            
+            scrollableParent.scrollTo({
+              top: Math.max(0, targetScrollTop),
+              behavior: 'smooth'
+            });
+          } else {
+            // Fallback: scroll element into view but only within its container
+            recipeGridRef.current.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'nearest', // Use 'nearest' instead of 'start' to avoid viewport scrolling
+              inline: 'nearest'
+            });
+          }
+        } else {
+          // On desktop, use the original behavior
+          recipeGridRef.current.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }
       }
     }, 100); // Small delay to ensure state update
   }, []);
