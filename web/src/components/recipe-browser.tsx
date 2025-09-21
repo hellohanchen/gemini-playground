@@ -117,7 +117,7 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
   const [areas, setAreas] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedArea, setSelectedArea] = useState<string>("");
-  const [activeTab, setActiveTab] = useState("signature");
+  const [activeTab, setActiveTab] = useState("signature"); // Default to signature on initial load
   
   // Ref for scrolling to recipe grid
   const recipeGridRef = useRef<HTMLDivElement>(null);
@@ -125,6 +125,15 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
   // Handle tab switching with loading reset
   const handleTabChange = (newTab: string) => {
     if (newTab !== activeTab) {
+      // If there's an active search and user clicks a tab, clear the search
+      if (searchQuery.trim()) {
+        setSearchQuery("");
+        setTabState(prev => ({
+          ...prev,
+          search: { ...prev.search, loaded: false, query: '', allRecipes: [] }
+        }));
+      }
+      
       // Reset loading state when switching tabs
       updateBrowseState({
         recipes: [],
@@ -195,7 +204,6 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
         updateBrowseState({ loading: false });
       }
     } catch (error) {
-      
       const errorMessage = error instanceof MealDBApiError ? error.message : 'Failed to load random recipes';
       updateBrowseState({ 
         loading: false, 
@@ -204,7 +212,7 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
       });
       console.error('Failed to load random recipes:', error);
     }
-  }, [activeTab, updateBrowseState]);
+  }, [activeTab, updateBrowseState, tabState.random.loaded, browseState.loading]);
 
   // Load random recipes on initial mount only
   useEffect(() => {
@@ -216,7 +224,8 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
 
   // Handle signature recipes loading
   useEffect(() => {
-    if (activeTab === 'signature') {
+    // Don't override search results - only update if we're on signature tab and no active search
+    if (activeTab === 'signature' && !searchQuery.trim()) {
       updateBrowseState({
         recipes: signatureRecipes,
         loading: signatureLoading,
@@ -232,12 +241,12 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
         }));
       }
     }
-  }, [activeTab, signatureRecipes, signatureLoading, signatureError]);
+  }, [activeTab, signatureRecipes, signatureLoading, signatureError, searchQuery]);
 
   // Handle tab switching and loading
   useEffect(() => {
-    // Skip if we're showing search results
-    if (tabState.search.loaded && tabState.search.query === searchQuery.trim()) {
+    // Priority 1: Show search results when in search mode
+    if (activeTab === "search" && tabState.search.loaded && searchQuery.trim()) {
       const recipes = getPaginatedRecipes(tabState.search.allRecipes, tabState.search.pagination);
       updateBrowseState({
         recipes,
@@ -248,8 +257,8 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
       return;
     }
 
-    // Handle non-signature tabs
-    if (activeTab !== 'signature') {
+    // Handle regular tabs (not search mode)
+    if (activeTab !== 'signature' && activeTab !== 'search') {
       const currentTabData = tabState[activeTab as keyof TabState];
       
       if (currentTabData.loaded) {
@@ -278,10 +287,13 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
         });
       }
     }
-  }, [activeTab, tabState.search.loaded, tabState.search.query, tabState.search.pagination.currentPage, tabState.random.loaded, tabState.categories.loaded, tabState.categories.pagination.currentPage, tabState.countries.loaded, tabState.countries.pagination.currentPage, searchQuery]);
+  }, [activeTab, tabState.search.loaded, tabState.search.query, tabState.search.pagination.currentPage, tabState.random.loaded, tabState.categories.loaded, tabState.categories.pagination.currentPage, tabState.countries.loaded, tabState.countries.pagination.currentPage, searchQuery, selectedCategory, selectedArea]);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
+    
+    // Enter search mode: deselect all tabs
+    setActiveTab("search");
     
     // Clear other filters when searching
     setSelectedCategory("");
@@ -317,10 +329,13 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
         }
       }));
       
-      // The useEffect will handle updating browseState with paginated results
+      // Directly update the browse state with search results since we're in search mode
+      const paginatedRecipes = getPaginatedRecipes(allRecipes, newPagination);
       updateBrowseState({ 
+        recipes: paginatedRecipes,
         loading: false, 
-        hasSearched: true 
+        hasSearched: true,
+        error: null
       });
     } catch (error) {
       updateBrowseState({ 
@@ -337,11 +352,12 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
     setSearchQuery("");
     setSelectedCategory(category);
     
-    // Clear other filter states
+    // Clear other filter states AND clear the current categories data
     setTabState(prev => ({
       ...prev,
       search: { ...prev.search, loaded: false, query: '' },
-      countries: { ...prev.countries, loaded: false }
+      countries: { ...prev.countries, loaded: false },
+      categories: { ...prev.categories, loaded: false, allRecipes: [] } // Clear old category data
     }));
     
     updateBrowseState({ loading: true, error: null });
@@ -386,11 +402,12 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
     setSearchQuery("");
     setSelectedArea(area);
     
-    // Clear other filter states
+    // Clear other filter states AND clear the current countries data
     setTabState(prev => ({
       ...prev,
       search: { ...prev.search, loaded: false, query: '' },
-      categories: { ...prev.categories, loaded: false }
+      categories: { ...prev.categories, loaded: false },
+      countries: { ...prev.countries, loaded: false, allRecipes: [] } // Clear old country data
     }));
     
     updateBrowseState({ loading: true, error: null });
@@ -451,10 +468,42 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
     // Scroll to the top of the recipe grid after page change
     setTimeout(() => {
       if (recipeGridRef.current) {
-        recipeGridRef.current.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
-        });
+        // Check if we're on mobile device
+        const isMobile = window.innerWidth <= 768 || 'ontouchstart' in window;
+        
+        if (isMobile) {
+          // On mobile, scroll within the container instead of the entire viewport
+          // Find the scrollable parent container - ScrollArea creates a viewport div
+          const scrollableParent = recipeGridRef.current.closest('[data-radix-scroll-area-viewport]') ||
+                                   recipeGridRef.current.closest('.overflow-y-auto') ||
+                                   recipeGridRef.current.closest('[style*="overflow"]');
+          
+          if (scrollableParent) {
+            // Calculate the position relative to the scrollable container
+            const containerRect = scrollableParent.getBoundingClientRect();
+            const elementRect = recipeGridRef.current.getBoundingClientRect();
+            const scrollTop = scrollableParent.scrollTop;
+            const targetScrollTop = scrollTop + (elementRect.top - containerRect.top) - 20;
+            
+            scrollableParent.scrollTo({
+              top: Math.max(0, targetScrollTop),
+              behavior: 'smooth'
+            });
+          } else {
+            // Fallback: scroll element into view but only within its container
+            recipeGridRef.current.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'nearest', // Use 'nearest' instead of 'start' to avoid viewport scrolling
+              inline: 'nearest'
+            });
+          }
+        } else {
+          // On desktop, use the original behavior
+          recipeGridRef.current.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }
       }
     }, 100); // Small delay to ensure state update
   }, []);
@@ -492,6 +541,10 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
     setSelectedCategory("");
     setSelectedArea("");
     setSearchQuery("");
+    // Only go to random tab if currently in search mode (no tab selected)
+    if (activeTab === "search") {
+      setActiveTab("random");
+    }
     // Clear search results from tab state
     setTabState(prev => ({
       ...prev,
@@ -571,7 +624,7 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
       </div>
 
       {/* Browse Tabs */}
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full flex flex-col flex-grow overflow-hidden">
+      <Tabs value={activeTab === "search" ? undefined : activeTab} onValueChange={handleTabChange} className="w-full flex flex-col flex-grow overflow-hidden">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="signature" className="flex items-center gap-2">
             <Award className="h-4 w-4" />
@@ -639,12 +692,35 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
           {activeTab === 'countries' && (
             <h3 className="text-lg font-semibold">Browse by Country</h3>
           )}
+          {activeTab === 'search' && (
+            <h3 className="text-lg font-semibold">Search Results</h3>
+          )}
         </div>
 
-        {/* Active Filter Section - Only show for Categories/Countries with active filters */}
-        {((activeTab === 'categories' && selectedCategory) || (activeTab === 'countries' && selectedArea)) && (
+        {/* Active Filter Section - Show for search, categories, or countries with active filters */}
+        {(searchQuery.trim() || (activeTab === 'categories' && selectedCategory) || (activeTab === 'countries' && selectedArea)) && (
           <div className="flex items-center gap-2 flex-wrap mb-4 flex-shrink-0 ml-2">
             <span className="text-sm text-muted-foreground">Active filter:</span>
+            {searchQuery.trim() && (
+              <Badge 
+                variant="secondary" 
+                className="cursor-pointer hover:bg-secondary/80 flex items-center gap-1"
+                onClick={() => {
+                  setSearchQuery("");
+                  // Only go to random tab if currently in search mode (no tab selected)
+                  if (activeTab === "search") {
+                    setActiveTab("random");
+                  }
+                  setTabState(prev => ({
+                    ...prev,
+                    search: { ...prev.search, loaded: false, query: '', allRecipes: [] }
+                  }));
+                }}
+              >
+                Search: {searchQuery}
+                <X className="h-3 w-3" />
+              </Badge>
+            )}
             {activeTab === 'categories' && selectedCategory && (
               <Badge 
                 variant="secondary" 
@@ -718,6 +794,7 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
               {/* Recipe Content Area - Show for all tabs when appropriate */}
               {(activeTab === 'signature' || 
                 activeTab === 'random' || 
+                activeTab === 'search' || 
                 (activeTab === 'categories' && selectedCategory) || 
                 (activeTab === 'countries' && selectedArea)) && (
                 <>
@@ -860,7 +937,7 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
                     </div>
                   )}
 
-                  {/* Other Recipe Grids (Random, Categories, Countries) */}
+                  {/* Other Recipe Grids (Random, Categories, Countries, Search) */}
                   {browseState.recipes.length > 0 && activeTab !== 'signature' && (
                     <>
                       <div ref={recipeGridRef} className="space-y-4">
