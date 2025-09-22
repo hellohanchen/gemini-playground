@@ -34,7 +34,7 @@ export function RoomComponent() {
       token={token}
       connect={shouldConnect}
       audio={true}
-      className="flex flex-col flex-grow overflow-hidden max-w-md mx-auto w-full px-4"
+      className="flex flex-col flex-grow overflow-hidden w-full"
       options={{
         publishDefaults: {
           stopMicTrackOnMute: true,
@@ -43,7 +43,7 @@ export function RoomComponent() {
     >
       <AgentProvider>
         {/* Main content area */}
-        <div className="flex flex-col flex-grow rounded-2xl bg-card border border-border overflow-hidden">
+        <div className="flex flex-col flex-grow bg-card overflow-hidden md:rounded-2xl md:border md:border-border md:max-w-md md:mx-auto">
           {showCookingSession ? (
             // Show cooking session interface - optimized for single screen
             <div className="flex flex-col h-full">

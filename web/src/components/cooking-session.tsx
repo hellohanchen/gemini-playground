@@ -25,7 +25,7 @@ export function CookingSession() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-4 space-y-4">
+    <div className="w-full p-4 space-y-4 md:max-w-2xl md:mx-auto">
       {/* Header */}
       <div className="text-center">
         <h3 className="text-lg font-semibold text-foreground">{currentRecipe.title}</h3>

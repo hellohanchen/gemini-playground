@@ -88,7 +88,7 @@ export function RecipeCompletionSummary({ onExit }: RecipeCompletionSummaryProps
   const totalSteps = 1;
 
   return (
-    <div className="w-full max-w-md mx-auto p-4 space-y-6">
+    <div className="w-full p-4 space-y-6 md:max-w-md md:mx-auto">
       {/* Success Header */}
       <div className="text-center space-y-3">
         <div className="flex justify-center">

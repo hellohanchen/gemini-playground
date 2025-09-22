@@ -207,41 +207,43 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="flex flex-col h-full max-w-md mx-auto w-full px-4 py-6">
+    <div className="flex flex-col h-full w-full px-4 py-4 md:max-w-md md:mx-auto md:py-6">
       {/* Back to Home */}
-      <div className="mb-4">
+      <div className="mb-3 md:mb-4">
         <Link href="/">
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Home
+          <Button variant="ghost" size="sm" className="h-8 px-2 text-sm">
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            <span className="hidden sm:inline">Back to Home</span>
+            <span className="sm:hidden">Back</span>
           </Button>
         </Link>
       </div>
 
       {/* Profile Header */}
-      <Card className="mb-6">
-        <CardHeader>
+      <Card className="mb-4 md:mb-6">
+        <CardHeader className="pb-4 md:pb-6">
           <CardTitle className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
-              <User className="h-6 w-6 text-orange-600" />
+            <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
+              <User className="h-5 w-5 md:h-6 md:w-6 text-orange-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold">{user.displayName || "User"}</h1>
-              <p className="text-muted-foreground text-sm font-normal">Your Cooking Profile</p>
+              <h1 className="text-xl md:text-2xl font-bold">{user.displayName || "User"}</h1>
+              <p className="text-muted-foreground text-xs md:text-sm font-normal">Your Cooking Profile</p>
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm">
-              <Mail className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">Email:</span>
+        <CardContent className="pt-0">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-xs md:text-sm">
+              <Mail className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
+              <span className="text-muted-foreground hidden sm:inline">Email:</span>
               <span className="break-all">{user.email}</span>
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">Member since:</span>
-              <span>{user.metadata?.creationTime ? formatDate(new Date(user.metadata.creationTime)) : 'Unknown'}</span>
+            <div className="flex items-center gap-2 text-xs md:text-sm">
+              <Calendar className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
+              <span className="text-muted-foreground hidden sm:inline">Member since:</span>
+              <span className="sm:hidden text-muted-foreground">Since:</span>
+              <span className="text-xs md:text-sm">{user.metadata?.creationTime ? formatShortDate(new Date(user.metadata.creationTime)) : 'Unknown'}</span>
             </div>
           </div>
         </CardContent>
@@ -249,10 +251,11 @@ export function ProfilePage() {
 
       {/* Cooking History */}
       <Card className="flex-1 flex flex-col min-h-0">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ChefHat className="h-5 w-5 text-orange-500" />
-            Recent Cooking History
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+            <ChefHat className="h-4 w-4 md:h-5 md:w-5 text-orange-500" />
+            <span className="hidden sm:inline">Recent Cooking History</span>
+            <span className="sm:hidden">Cooking History</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col min-h-0">
@@ -294,27 +297,33 @@ export function ProfilePage() {
                   const currentPageCompletions = groupedCompletions.slice(startIndex, endIndex);
                   
                   return currentPageCompletions.map((groupedCompletion) => (
-                    <Card key={groupedCompletion.recipeId} className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <h4 className="font-medium text-foreground mb-1">
+                    <Card key={groupedCompletion.recipeId} className="p-3 md:p-4">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-foreground mb-1 text-sm md:text-base line-clamp-2">
                             {groupedCompletion.recipeTitle}
                           </h4>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
                             <div className="flex items-center gap-1">
                               <Clock className="h-3 w-3" />
-                              <span>Last completed {formatShortDate(groupedCompletion.lastCompletedAt)}</span>
+                              <span className="hidden sm:inline">Last completed {formatShortDate(groupedCompletion.lastCompletedAt)}</span>
+                              <span className="sm:hidden">{formatShortDate(groupedCompletion.lastCompletedAt)}</span>
                             </div>
                           </div>
                           {groupedCompletion.completionCount > 1 && (
-                            <div className="text-xs text-muted-foreground mt-1">
+                            <div className="text-xs text-muted-foreground mt-1 hidden sm:block">
                               First completed {formatShortDate(groupedCompletion.firstCompletedAt)}
                             </div>
                           )}
                         </div>
-                        <div className="flex items-center">
-                          <Badge variant="secondary" className="bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300">
-                            {groupedCompletion.completionCount === 1 ? 'Completed' : `Completed ${groupedCompletion.completionCount} times`}
+                        <div className="flex items-center flex-shrink-0">
+                          <Badge variant="secondary" className="bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 text-xs">
+                            <span className="hidden sm:inline">
+                              {groupedCompletion.completionCount === 1 ? 'Completed' : `Completed ${groupedCompletion.completionCount} times`}
+                            </span>
+                            <span className="sm:hidden">
+                              {groupedCompletion.completionCount === 1 ? '1x' : `${groupedCompletion.completionCount}x`}
+                            </span>
                           </Badge>
                         </div>
                       </div>
@@ -327,12 +336,17 @@ export function ProfilePage() {
 
           {/* Pagination */}
           {!loading && !error && groupedCompletions.length > 0 && (
-            <div className="pt-4 space-y-3">
+            <div className="pt-3 md:pt-4 space-y-2 md:space-y-3">
               <div className="text-xs text-muted-foreground text-center">
-                Showing {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1}-{Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of {pagination.totalItems} recipes
+                <span className="hidden sm:inline">
+                  Showing {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1}-{Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of {pagination.totalItems} recipes
+                </span>
+                <span className="sm:hidden">
+                  {pagination.currentPage} of {Math.ceil(pagination.totalItems / pagination.itemsPerPage)}
+                </span>
               </div>
               
-              <div className="flex items-center justify-center gap-0.5 flex-wrap">
+              <div className="flex items-center justify-center gap-1 flex-wrap">
                 {(() => {
                   const totalPages = Math.ceil(pagination.totalItems / pagination.itemsPerPage);
                   const currentPage = pagination.currentPage;

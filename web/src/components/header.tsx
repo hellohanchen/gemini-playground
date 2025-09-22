@@ -31,7 +31,7 @@ export function Header() {
   return (
     <>
       <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="max-w-md mx-auto w-full px-4 py-2 flex items-center justify-between">
+        <div className="w-full px-4 py-2 flex items-center justify-between md:max-w-md md:mx-auto">
           {/* Left side - App name */}
           <a 
             href="https://allyoucancook.life/" 
@@ -40,7 +40,7 @@ export function Header() {
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
             <ChefHat className="h-5 w-5 text-orange-500" />
-            <h1 className="text-lg font-semibold bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
+            <h1 className="text-lg md:text-lg font-semibold bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
               All You Can Cook
             </h1>
           </a>
