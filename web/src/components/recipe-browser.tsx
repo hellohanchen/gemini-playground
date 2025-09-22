@@ -648,12 +648,13 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
         <div className="flex justify-between mb-1 flex-shrink-0 mt-2 ml-2">
           {activeTab === 'signature' && (
             <>
-              <h3 className="text-lg font-semibold">Signature Recipes</h3>
+              <h3 className="text-lg font-semibold text-foreground">Signature Recipes</h3>
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={refreshSignatureRecipes}
                 disabled={signatureLoading}
+                className="text-foreground border-border hover:bg-accent hover:text-accent-foreground"
               >
                 {signatureLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -666,7 +667,7 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
           )}
           {activeTab === 'random' && (
             <>
-              <h3 className="text-lg font-semibold">Random Recipes</h3>
+              <h3 className="text-lg font-semibold text-foreground">Random Recipes</h3>
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -680,6 +681,7 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
                   }, 10);
                 }}
                 disabled={browseState.loading}
+                className="text-foreground border-border hover:bg-accent hover:text-accent-foreground"
               >
                 <RefreshCw className={`h-4 w-4 mr-2 ${browseState.loading ? 'animate-spin' : ''}`} />
                 Refresh
@@ -687,13 +689,13 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
             </>
           )}
           {activeTab === 'categories' && (
-            <h3 className="text-lg font-semibold">Browse by Category</h3>
+            <h3 className="text-lg font-semibold text-foreground">Browse by Category</h3>
           )}
           {activeTab === 'countries' && (
-            <h3 className="text-lg font-semibold">Browse by Country</h3>
+            <h3 className="text-lg font-semibold text-foreground">Browse by Country</h3>
           )}
           {activeTab === 'search' && (
-            <h3 className="text-lg font-semibold">Search Results</h3>
+            <h3 className="text-lg font-semibold text-foreground">Search Results</h3>
           )}
         </div>
 
@@ -764,7 +766,7 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
                       key={category}
                       variant="outline"
                       size="sm"
-                      className="h-12 text-sm font-medium"
+                      className="h-12 text-sm font-medium text-foreground border-border hover:bg-accent hover:text-accent-foreground"
                       onClick={() => handleCategoryFilter(category)}
                       disabled={browseState.loading}
                     >
@@ -781,7 +783,7 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
                       key={area}
                       variant="outline"
                       size="sm"
-                      className="h-12 text-sm font-medium"
+                      className="h-12 text-sm font-medium text-foreground border-border hover:bg-accent hover:text-accent-foreground"
                       onClick={() => handleAreaFilter(area)}
                       disabled={browseState.loading}
                     >
@@ -1160,7 +1162,7 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
                                 size="sm"
                                 onClick={() => handlePageChange(1, paginationContext)}
                                 disabled={currentPage <= 1}
-                                className="h-8 px-1.5 text-xs"
+                                className="h-8 px-1.5 text-xs text-foreground border-border hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
                               >
                                 <ChevronsLeft className="h-3 w-3" />
                                 <span className="hidden md:inline ml-1">First</span>
@@ -1171,7 +1173,7 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
                                 size="sm"
                                 onClick={() => handlePageChange(currentPage - 1, paginationContext)}
                                 disabled={currentPage <= 1}
-                                className="h-8 px-2 text-xs"
+                                className="h-8 px-2 text-xs text-foreground border-border hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
                               >
                                 <span className="hidden sm:inline">Prev</span>
                                 <span className="sm:hidden">‹</span>
@@ -1195,7 +1197,11 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
                                       key={pageNum}
                                       variant={currentPage === pageNum ? "default" : "outline"}
                                       size="sm"
-                                      className="w-7 h-8 p-0 text-xs"
+                                      className={`w-7 h-8 p-0 text-xs ${
+                                        currentPage === pageNum 
+                                          ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                                          : "text-foreground border-border hover:bg-accent hover:text-accent-foreground"
+                                      }`}
                                       onClick={() => handlePageChange(pageNum, paginationContext)}
                                     >
                                       {pageNum}
@@ -1209,7 +1215,7 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
                                 size="sm"
                                 onClick={() => handlePageChange(currentPage + 1, paginationContext)}
                                 disabled={currentPage >= totalPages}
-                                className="h-8 px-2 text-xs"
+                                className="h-8 px-2 text-xs text-foreground border-border hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
                               >
                                 <span className="hidden sm:inline">Next</span>
                                 <span className="sm:hidden">›</span>
@@ -1220,7 +1226,7 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
                                 size="sm"
                                 onClick={() => handlePageChange(totalPages, paginationContext)}
                                 disabled={currentPage >= totalPages}
-                                className="h-8 px-1.5 text-xs"
+                                className="h-8 px-1.5 text-xs text-foreground border-border hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
                               >
                                 <span className="hidden md:inline mr-1">Last</span>
                                 <ChevronsRight className="h-3 w-3" />
