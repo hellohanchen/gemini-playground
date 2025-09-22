@@ -134,7 +134,7 @@ export function RecipeSelector({ onRecipeSelected }: RecipeSelectorProps) {
   if (selectedRecipe) {
     return (
       <>
-        <div className="w-full max-w-md mx-auto h-full flex flex-col">
+        <div className="w-full h-full flex flex-col md:max-w-md md:mx-auto">
           {/* Fixed Header with back button */}
           <div className="flex items-center gap-3 p-4 pb-2 flex-shrink-0">
             <Button

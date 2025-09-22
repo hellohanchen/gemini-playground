@@ -600,9 +600,9 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 h-full flex flex-col overflow-hidden">
-      {/* Header */}
-      <div className="text-center mb-4">
+    <div className="w-full p-4 h-full flex flex-col overflow-hidden md:max-w-4xl md:mx-auto">
+      {/* Header - only show on desktop */}
+      <div className="text-center mb-4 hidden md:block">
         <h1 className="text-2xl font-bold text-primary mb-2">All You Can Cook</h1>
       </div>
 
@@ -875,7 +875,68 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
                           onClick={() => onRecipeSelected(recipe)}
                         >
                           <CardContent className="p-4">
-                            <div className="flex gap-4">
+                            {/* Mobile layout: Image on top, content below */}
+                            <div className="md:hidden">
+                              {/* Mobile Image */}
+                              {recipe.imageUrl && (
+                                <div className="w-full h-40 bg-muted rounded-lg overflow-hidden mb-3">
+                                  <img
+                                    src={recipe.imageUrl}
+                                    alt={recipe.title}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      (e.target as HTMLImageElement).style.display = 'none';
+                                    }}
+                                  />
+                                </div>
+                              )}
+                              {/* Mobile Content */}
+                              <div className="space-y-2">
+                                <h3 className="font-semibold text-lg line-clamp-2">{recipe.title}</h3>
+                                <p className="text-sm text-muted-foreground line-clamp-3">
+                                  {recipe.description}
+                                </p>
+                                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                  {recipe.totalTime && (
+                                    <div className="flex items-center gap-1">
+                                      <Clock className="h-3 w-3" />
+                                      <span>{recipe.totalTime}m</span>
+                                    </div>
+                                  )}
+                                  {recipe.servings && (
+                                    <div className="flex items-center gap-1">
+                                      <Users className="h-3 w-3" />
+                                      <span>{recipe.servings}</span>
+                                    </div>
+                                  )}
+                                  {recipe.difficulty && (
+                                    <Badge 
+                                      variant={
+                                        recipe.difficulty === 'Easy' ? 'default' :
+                                        recipe.difficulty === 'Medium' ? 'secondary' : 'destructive'
+                                      }
+                                      className="text-xs"
+                                    >
+                                      {recipe.difficulty}
+                                    </Badge>
+                                  )}
+                                  <Badge variant="outline" className="text-xs">
+                                    <Award className="h-3 w-3 mr-1" />
+                                    Signature
+                                  </Badge>
+                                </div>
+                                <div className="flex flex-wrap gap-1">
+                                  {recipe.tags.slice(0, 4).map((tag) => (
+                                    <Badge key={tag} variant="secondary" className="text-xs">
+                                      {tag}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Desktop layout: Image on left, content on right */}
+                            <div className="hidden md:flex gap-4">
                               {recipe.imageUrl && (
                                 <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
                                   <img
@@ -948,7 +1009,71 @@ export function RecipeBrowser({ onRecipeSelected }: RecipeBrowserProps) {
                             onClick={() => onRecipeSelected(recipe)}
                           >
                             <CardContent className="p-4">
-                              <div className="flex gap-4">
+                              {/* Mobile layout: Image on top, content below */}
+                              <div className="md:hidden">
+                                {/* Mobile Image */}
+                                <div className="w-full h-40 bg-muted rounded-lg overflow-hidden mb-3">
+                                  {recipe.imageUrl ? (
+                                    <img
+                                      src={recipe.imageUrl}
+                                      alt={recipe.title}
+                                      className="w-full h-full object-cover"
+                                      onError={(e) => {
+                                        (e.target as HTMLImageElement).style.display = 'none';
+                                      }}
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                      <ChefHat className="h-12 w-12 text-muted-foreground" />
+                                    </div>
+                                  )}
+                                </div>
+                                {/* Mobile Content */}
+                                <div className="space-y-2">
+                                  <h3 className="font-semibold text-lg line-clamp-2">{recipe.title}</h3>
+                                  <p className="text-sm text-muted-foreground line-clamp-3">{recipe.description}</p>
+                                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                    {recipe.totalTime && (
+                                      <div className="flex items-center gap-1">
+                                        <Clock className="h-3 w-3" />
+                                        <span>{recipe.totalTime}m</span>
+                                      </div>
+                                    )}
+                                    {recipe.servings && (
+                                      <div className="flex items-center gap-1">
+                                        <Users className="h-3 w-3" />
+                                        <span>{recipe.servings}</span>
+                                      </div>
+                                    )}
+                                    {recipe.difficulty && (
+                                      <Badge 
+                                        variant={
+                                          recipe.difficulty === 'Easy' ? 'default' :
+                                          recipe.difficulty === 'Medium' ? 'secondary' : 'destructive'
+                                        }
+                                        className="text-xs"
+                                      >
+                                        {recipe.difficulty}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  <div className="flex flex-wrap gap-1">
+                                    {recipe.tags.slice(0, 4).map((tag) => (
+                                      <Badge key={tag} variant="outline" className="text-xs">
+                                        {tag}
+                                      </Badge>
+                                    ))}
+                                    {recipe.tags.length > 4 && (
+                                      <Badge variant="outline" className="text-xs">
+                                        +{recipe.tags.length - 4}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Desktop layout: Image on left, content on right */}
+                              <div className="hidden md:flex gap-4">
                                 <div className="flex-shrink-0 w-20 h-20 bg-muted rounded-lg overflow-hidden">
                                   {recipe.imageUrl ? (
                                     <img
