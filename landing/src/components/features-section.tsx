@@ -48,6 +48,22 @@ export function FeaturesSection() {
           </motion.div>
         ))}
       </div>
+      
+      <motion.div
+        className="flex justify-center mt-12"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.8 }}
+      >
+        <a 
+          href="https://demo.allyoucancook.life/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-purple-500/25 transform hover:scale-105 font-semibold"
+        >
+          Try the App Now
+        </a>
+      </motion.div>
     </section>
   );
 }
