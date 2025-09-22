@@ -70,7 +70,7 @@ export function SessionControls() {
           <DropdownMenuTrigger asChild>
             <Button
               variant="secondary"
-              className="px-2.5 bg-card shadow-none hover:bg-accent rounded-l-none border-l-[1px] border-border text-sm font-semibold text-card-foreground"
+              className="px-2.5 bg-card shadow-none hover:bg-accent rounded-l-none border-l-[1px] border-border text-sm font-semibold text-foreground"
             >
               <ChevronDown className="h-4 w-4 text-muted-foreground" />
             </Button>
@@ -114,7 +114,7 @@ export function SessionControls() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <Button variant="outline" size="sm" className="px-4" onClick={disconnect}>
+      <Button variant="outline" size="sm" className="px-4 text-foreground border-border hover:bg-accent hover:text-accent-foreground" onClick={disconnect}>
         Pause Conversation
       </Button>
     </div>

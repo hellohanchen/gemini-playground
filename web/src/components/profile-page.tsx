@@ -211,7 +211,7 @@ export function ProfilePage() {
       {/* Back to Home */}
       <div className="mb-3 md:mb-4">
         <Link href="/">
-          <Button variant="ghost" size="sm" className="h-8 px-2 text-sm">
+          <Button variant="ghost" size="sm" className="h-8 px-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground">
             <ArrowLeft className="h-4 w-4 mr-1" />
             <span className="hidden sm:inline">Back to Home</span>
             <span className="sm:hidden">Back</span>
@@ -358,7 +358,7 @@ export function ProfilePage() {
                         size="sm"
                         onClick={() => handlePageChange(1)}
                         disabled={currentPage <= 1}
-                        className="h-8 px-1.5 text-xs"
+                        className="h-8 px-1.5 text-xs text-foreground border-border hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
                       >
                         <ChevronsLeft className="h-3 w-3" />
                         <span className="hidden md:inline ml-1">First</span>
@@ -369,7 +369,7 @@ export function ProfilePage() {
                         size="sm"
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage <= 1}
-                        className="h-8 px-2 text-xs"
+                        className="h-8 px-2 text-xs text-foreground border-border hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
                       >
                         <span className="hidden sm:inline">Prev</span>
                         <span className="sm:hidden">‹</span>
@@ -393,7 +393,11 @@ export function ProfilePage() {
                               key={pageNum}
                               variant={currentPage === pageNum ? "default" : "outline"}
                               size="sm"
-                              className="w-7 h-8 p-0 text-xs"
+                              className={`w-7 h-8 p-0 text-xs ${
+                                currentPage === pageNum 
+                                  ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                                  : "text-foreground border-border hover:bg-accent hover:text-accent-foreground"
+                              }`}
                               onClick={() => handlePageChange(pageNum)}
                             >
                               {pageNum}
@@ -407,7 +411,7 @@ export function ProfilePage() {
                         size="sm"
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage >= totalPages}
-                        className="h-8 px-2 text-xs"
+                        className="h-8 px-2 text-xs text-foreground border-border hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
                       >
                         <span className="hidden sm:inline">Next</span>
                         <span className="sm:hidden">›</span>
@@ -418,7 +422,7 @@ export function ProfilePage() {
                         size="sm"
                         onClick={() => handlePageChange(totalPages)}
                         disabled={currentPage >= totalPages}
-                        className="h-8 px-1.5 text-xs"
+                        className="h-8 px-1.5 text-xs text-foreground border-border hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
                       >
                         <span className="hidden md:inline mr-1">Last</span>
                         <ChevronsRight className="h-3 w-3" />

@@ -141,7 +141,7 @@ export function RecipeSelector({ onRecipeSelected }: RecipeSelectorProps) {
               variant="ghost"
               size="sm"
               onClick={handleBackToList}
-              className="p-2"
+              className="p-2 text-foreground hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
