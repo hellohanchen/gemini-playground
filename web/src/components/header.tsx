@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/contexts/auth-context";
 import { LoginPage } from "@/components/login-page";
+import { HelpButton } from "@/components/help-modal";
 import { useState } from "react";
 import Link from "next/link";
 import {
@@ -92,6 +93,9 @@ export function Header() {
               Sign In
             </Button>
           )}
+
+          {/* Help button */}
+          <HelpButton />
 
           {/* Theme toggle */}
           <Button
