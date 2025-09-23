@@ -10,6 +10,7 @@ import { AuthProvider } from "@/contexts/auth-context";
 import { Roboto } from "next/font/google";
 import dynamic from "next/dynamic";
 import { ScrollToTop } from "@/components/scroll-to-top";
+import { Metadata } from "next";
 
 const PostHogPageView = dynamic(
   () => import("../components/posthog-pageview"),
@@ -27,6 +28,26 @@ const roboto = Roboto({
 });
 
 import "@livekit/components-styles";
+
+export const metadata: Metadata = {
+  title: "All You Can Cook - AI Cooking Assistant",
+  description: "Meet Acai, your friendly AI cooking assistant! Get step-by-step cooking guidance, ingredient tips, and kitchen safety advice through voice interaction.",
+  openGraph: {
+    title: "All You Can Cook - AI Cooking Assistant",
+    description: "Meet Acai, your friendly AI cooking assistant! Get step-by-step cooking guidance, ingredient tips, and kitchen safety advice through voice interaction.",
+    type: "website",
+    url: "https://allyoucancook.app/",
+    images: [
+      {
+        url: "https://allyoucancook.app/og-image.png",
+        width: 1200,
+        height: 676,
+        type: "image/png",
+        alt: "All You Can Cook - AI Cooking Assistant",
+      },
+    ],
+  },
+};
 
 export default function RootLayout({
   children,
