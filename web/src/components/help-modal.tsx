@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { HelpCircle, X, ExternalLink } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -33,7 +33,7 @@ export function HelpModal({ open, onOpenChange }: HelpModalProps) {
         <div className="space-y-4 text-sm text-foreground">
           <div>
             <p className="mb-3">
-              Our AI cooking assistant <span className="font-semibold text-orange-500">"Acai"</span> will help you prepare food and improve cooking skills.
+              Our AI cooking assistant <span className="font-semibold text-orange-500">&ldquo;Acai&rdquo;</span> will help you prepare food and improve cooking skills.
             </p>
             
             <div className="space-y-2">
@@ -43,7 +43,7 @@ export function HelpModal({ open, onOpenChange }: HelpModalProps) {
               </div>
               <div className="flex items-start gap-2">
                 <span className="flex-shrink-0 w-5 h-5 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-medium">2</span>
-                <p>Click "Start Cooking with Acai" to begin a cooking session</p>
+                <p>Click &ldquo;Start Cooking with Acai&rdquo; to begin a cooking session</p>
               </div>
               <div className="flex items-start gap-2">
                 <span className="flex-shrink-0 w-5 h-5 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-medium">3</span>
